@@ -135,6 +135,13 @@ class MainFrame ( wx.Frame ):
 
         self.m_menubar1.Append( self.m_file, _(u"File") )
 
+        self.m_help = wx.Menu()
+        self.m_show_layout = wx.MenuItem( self.m_help, wx.ID_ANY, _(u"Show configuration layout"), wx.EmptyString, wx.ITEM_NORMAL )
+        self.m_show_layout.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_HELP_BOOK, wx.ART_MENU ) )
+        self.m_help.Append( self.m_show_layout )
+
+        self.m_menubar1.Append( self.m_help, _(u"Help") )
+
         self.SetMenuBar( self.m_menubar1 )
 
 
@@ -145,6 +152,7 @@ class MainFrame ( wx.Frame ):
         self.Bind( wx.EVT_MENU, self.event_open, id = self.m_open.GetId() )
         self.Bind( wx.EVT_MENU, self.event_save_as, id = self.m_saveas.GetId() )
         self.Bind( wx.EVT_MENU, self.event_close, id = self.m_exit.GetId() )
+        self.Bind( wx.EVT_MENU, self.print_config, id = self.m_show_layout.GetId() )
 
     def __del__( self ):
         pass
@@ -160,5 +168,47 @@ class MainFrame ( wx.Frame ):
     def event_save_as( self, event ):
         event.Skip()
 
+
+    def print_config( self, event ):
+        event.Skip()
+
+
+###########################################################################
+## Class terminal_frame
+###########################################################################
+
+class terminal_frame ( wx.Frame ):
+
+    def __init__( self, parent ):
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = _(u"Terminal"), pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.CAPTION|wx.CLOSE_BOX|wx.MINIMIZE_BOX|wx.RESIZE_BORDER|wx.SYSTEM_MENU|wx.TAB_TRAVERSAL )
+
+        self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+
+        bSizer9 = wx.BoxSizer( wx.VERTICAL )
+
+        bSizer10 = wx.BoxSizer( wx.VERTICAL )
+
+        self.m_output = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_MULTILINE|wx.TE_READONLY )
+        bSizer10.Add( self.m_output, 1, wx.ALL|wx.EXPAND, 0 )
+
+
+        bSizer9.Add( bSizer10, 1, wx.EXPAND, 5 )
+
+
+        self.SetSizer( bSizer9 )
+        self.Layout()
+
+        self.Centre( wx.BOTH )
+
+        # Connect Events
+        self.Bind( wx.EVT_CLOSE, self.onClose )
+
+    def __del__( self ):
+        pass
+
+
+    # Virtual event handlers, overide them in your derived class
+    def onClose( self, event ):
+        event.Skip()
 
 

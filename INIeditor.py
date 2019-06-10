@@ -3,12 +3,42 @@ import sys
 import os
 import wx
 import fb.GUI as GUI
+import configparser
+
+class terminal ( GUI.terminal_frame ) :
+    def __init__ ( self, parent ) :
+        GUI.terminal_frame.__init__( self, parent )
+
+    def write( self, text ) :
+        self.m_output.WriteText( text )
+
+    def flush( self ) :
+        pass
+
+    def onClose( self, event ) :
+        self.m_output.SetValue('')
+        self.Hide()
 
 class window ( GUI.MainFrame ) :
     def __init__ ( self, parent ) :
         GUI.MainFrame.__init__( self, parent )
+        self.log = terminal( None )
+        self.config = configparser.ConfigParser()
+        with open("res/struct.ini", 'r') as conf :
+            try :
+                self.config.read_file( f = conf )
+            except Exception as e :
+                wx.LogError( "Error occured: %s" % e )
+
+    def print_config( self, event ) :
+        self.log.Show( True )
+        for section in self.config.sections() :
+            print('[%s]' % section, file=self.log )
+            for option in self.config.options( section ) :
+                print('\t%s = %s' % ( option, self.config.get( section, option ) ), file=self.log )
 
     def event_close ( self, event ) :
+        self.log.Destroy()
         self.Destroy()
         raise SystemExit
 
@@ -22,11 +52,6 @@ class window ( GUI.MainFrame ) :
             try :
                 with open( file, 'w' ) as f :
                     f.seek( 0, 0 )
-                    f.write("[DISPLAY]\n\n")
-                    f.write("DISPLAY = %s\n" % self.display_choice.GetString( self.display_choice.GetSelection() ).lower() )
-                    f.write("POSITION_OFFSET = %s\n" % self.pos_offset_choice.GetString( self.pos_offset_choice.GetSelection() ).lower() )
-                    f.write("POSITION_FEEDBACK = %s\n" % self.pos_fb_choice.GetString( self.pos_fb_choice.GetSelection() ).lower() )
-                    f.flush()
                     f.close()
             except IOError :
                 wx.LogError( "Could not open file '%s'" % file)
