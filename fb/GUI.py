@@ -99,7 +99,7 @@ class MainFrame ( wx.Frame ):
         self.m_panel5.SetSizer( bSizer9 )
         self.m_panel5.Layout()
         bSizer9.Fit( self.m_panel5 )
-        bSizer6.Add( self.m_panel5, 1, wx.EXPAND |wx.ALL, 0 )
+        bSizer6.Add( self.m_panel5, 1, wx.EXPAND |wx.ALL, 5 )
 
 
         bSizer4.Add( bSizer6, 1, wx.EXPAND, 5 )
@@ -108,7 +108,7 @@ class MainFrame ( wx.Frame ):
         self.m_scrolledWindow1.SetSizer( bSizer4 )
         self.m_scrolledWindow1.Layout()
         bSizer4.Fit( self.m_scrolledWindow1 )
-        bSizer2.Add( self.m_scrolledWindow1, 1, wx.ALL|wx.EXPAND, 5 )
+        bSizer2.Add( self.m_scrolledWindow1, 1, wx.ALL|wx.EXPAND, 0 )
 
 
         self.m_panel1.SetSizer( bSizer2 )
@@ -149,6 +149,9 @@ class MainFrame ( wx.Frame ):
 
         # Connect Events
         self.Bind( wx.EVT_CLOSE, self.event_close )
+        self.display_choice.Bind( wx.EVT_CHOICE, self.chose_display )
+        self.pos_offset_choice.Bind( wx.EVT_CHOICE, self.chose_pos_offset )
+        self.pos_fb_choice.Bind( wx.EVT_CHOICE, self.chose_pos_fb )
         self.Bind( wx.EVT_MENU, self.event_open, id = self.m_open.GetId() )
         self.Bind( wx.EVT_MENU, self.event_save_as, id = self.m_saveas.GetId() )
         self.Bind( wx.EVT_MENU, self.event_close, id = self.m_exit.GetId() )
@@ -160,6 +163,15 @@ class MainFrame ( wx.Frame ):
 
     # Virtual event handlers, overide them in your derived class
     def event_close( self, event ):
+        event.Skip()
+
+    def chose_display( self, event ):
+        event.Skip()
+
+    def chose_pos_offset( self, event ):
+        event.Skip()
+
+    def chose_pos_fb( self, event ):
         event.Skip()
 
     def event_open( self, event ):

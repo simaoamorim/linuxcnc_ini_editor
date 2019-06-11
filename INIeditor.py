@@ -29,6 +29,8 @@ class window ( GUI.MainFrame ) :
                 self.config.read_file( f = conf )
             except Exception as e :
                 wx.LogError( "Error occured: %s" % e )
+            finally :
+                conf.close()
 
     def print_config( self, event ) :
         self.log.Show( True )
@@ -49,12 +51,27 @@ class window ( GUI.MainFrame ) :
             if fileDialog.ShowModal() == wx.ID_CANCEL :
                 return
             file = fileDialog.GetPath()
-            try :
-                with open( file, 'w' ) as f :
-                    f.seek( 0, 0 )
+            with open( file, 'w' ) as f :
+                try :
                     f.close()
-            except IOError :
-                wx.LogError( "Could not open file '%s'" % file)
+                except IOError :
+                    wx.LogError( "Could not open file '%s'" % file)
+
+    def set_interface( self ) :
+        self.display_choice.SetSelection(
+            self.display_choice.FindString(
+                self.config.get( 'DISPLAY', 'display' )
+            )
+        )
+        self.pos_offset_choice.SetSelection(
+            self.pos_offset_choice.FindString(
+                self.config.get( 'DISPLAY', 'position_offset' ) ) )
+        self.pos_fb_choice.SetSelection(
+            self.pos_fb_choice.FindString(
+                self.config.get( 'DISPLAY', 'position_feedback' )
+            )
+        )
+
 
     def event_open( self, event ) :
         with wx.FileDialog( parent = self,
@@ -66,17 +83,26 @@ class window ( GUI.MainFrame ) :
             file = fileDialog.GetPath()
             try :
                 with open( file, 'r' ) as f :
-                    f.seek( 0, 0 )
-                    while True:
-                        line = f.readline()
-                        if line.startswith('[') or line.startswith('\n') or not line :
-                            print("Passing line '%s'" % line)
-                        else :
-                            break
-                    print("First line: %s" % line)
+                    self.config.read_file( f = f )
                     f.close()
+                    self.set_interface()
             except IOError :
                 wx.LogError( "Could not open file '%s'" % file)
+
+
+    def chose_display( self, event ) :
+        self.config.set( section = 'DISPLAY', option = 'display',
+                        value = self.display_choice.GetString(
+                            self.display_choice.GetSelection() ).lower() )
+
+    def chose_pos_offset( self, event ) :
+        self.config.set( section = 'DISPLAY', option = 'position_offset',
+                        value = self.pos_offset_choice.GetString(
+                            self.pos_offset_choice.GetSelection() ).lower() )
+
+    def chose_pos_fb( self, event ) :
+        self.config.set( section = 'DISPLAY', option = 'position_feedback',
+                        value = self.pos_fb_choice.GetValue() )
 
 if __name__ == "__main__" :
     app = wx.App( redirect=False )
