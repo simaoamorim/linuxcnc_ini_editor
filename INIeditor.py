@@ -5,24 +5,10 @@ import wx
 import fb.GUI as GUI
 import configparser
 
-class terminal ( GUI.terminal_frame ) :
-    def __init__ ( self, parent ) :
-        GUI.terminal_frame.__init__( self, parent )
-
-    def write( self, text ) :
-        self.m_output.WriteText( text )
-
-    def flush( self ) :
-        pass
-
-    def onClose( self, event ) :
-        self.m_output.SetValue('')
-        self.Hide()
-
 class window ( GUI.MainFrame ) :
     def __init__ ( self, parent ) :
         GUI.MainFrame.__init__( self, parent )
-        self.log = terminal( None )
+        self.logWindow = wx.LogWindow( pParent=self, szTitle='Log', show=False )
         self.config = configparser.ConfigParser()
         with open("res/struct.ini", 'r') as conf :
             try :
@@ -32,15 +18,16 @@ class window ( GUI.MainFrame ) :
             finally :
                 conf.close()
 
-    def print_config( self, event ) :
-        self.log.Show( True )
-        for section in self.config.sections() :
-            print('[%s]' % section, file=self.log )
-            for option in self.config.options( section ) :
-                print('\t%s = %s' % ( option, self.config.get( section, option ) ), file=self.log )
+    def show_about( self, event ) :
+        event.Skip()
+
+    def hide_about( self, event ) :
+        evvent.Skip()
+
+    def show_log( self, event ) :
+        self.logWindow.Show()
 
     def event_close ( self, event ) :
-        self.log.Destroy()
         self.Destroy()
         raise SystemExit
 
@@ -53,6 +40,7 @@ class window ( GUI.MainFrame ) :
             file = fileDialog.GetPath()
             with open( file, 'w' ) as f :
                 try :
+                    self.config.write( fp = f, space_around_delimiters = True )
                     f.close()
                 except IOError :
                     wx.LogError( "Could not open file '%s'" % file)
@@ -91,18 +79,31 @@ class window ( GUI.MainFrame ) :
 
 
     def chose_display( self, event ) :
-        self.config.set( section = 'DISPLAY', option = 'display',
-                        value = self.display_choice.GetString(
-                            self.display_choice.GetSelection() ).lower() )
+        item = self.display_choice.GetString(
+                self.display_choice.GetSelection()
+            ).lower()
+        self.config.set( section = 'DISPLAY',
+                         option = 'display',
+                         value = item )
+        wx.LogDebug( "'DISPLAY'.'display' set to '%s'" % item )
 
     def chose_pos_offset( self, event ) :
-        self.config.set( section = 'DISPLAY', option = 'position_offset',
-                        value = self.pos_offset_choice.GetString(
-                            self.pos_offset_choice.GetSelection() ).lower() )
+        item = self.pos_offset_choice.GetString(
+                self.pos_offset_choice.GetSelection()
+            ).lower()
+        self.config.set( section = 'DISPLAY',
+                         option = 'position_offset',
+                         value = item )
+        wx.LogDebug( "'DISPLAY'.'position_offset' set to '%s'" % item )
 
     def chose_pos_fb( self, event ) :
-        self.config.set( section = 'DISPLAY', option = 'position_feedback',
-                        value = self.pos_fb_choice.GetValue() )
+        item = self.pos_fb_choice.GetString(
+                self.pos_fb_choice.GetSelection()
+            ).lower()
+        self.config.set( section = 'DISPLAY',
+                         option = 'position_feedback',
+                         value = item )
+        wx.LogDebug( "'DISPLAY'.'position_feedback' set to '%s'" % item )
 
 if __name__ == "__main__" :
     app = wx.App( redirect=False )
