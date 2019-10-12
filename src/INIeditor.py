@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-import sys
-import os
 import wx
-import fb.GUI as GUI
+import GUI
 import configparser
 
-class window ( GUI.MainFrame ) :
+class window (GUI.MainFrame) :
     def __init__ ( self, parent ) :
-        GUI.MainFrame.__init__( self, parent )
+        GUI.MainFrame.__init__(self, parent)
         self.logWindow = wx.LogWindow( pParent=self, szTitle='Log', show=False )
         self.config = configparser.ConfigParser()
-        with open("res/struct.ini", 'r') as conf :
+        with open("struct.ini", 'r') as conf :
             try :
                 self.config.read_file( f = conf )
             except Exception as e :
